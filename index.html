@@ -31,9 +31,9 @@
             { title: "덕천직영점", latlng: new kakao.maps.LatLng(35.2106, 129.0064) }
         ];
 
-        // 마커 색상별 이미지 URL
+        // 마커 색상별 이미지 URL (파란색 마커는 직접 추가)
         var redMarker = "https://t1.daumcdn.net/localimg/localimages/07/mapapidoc/marker_red.png"; 
-        var blueMarker = "https://t1.daumcdn.net/localimg/localimages/07/mapapidoc/marker_blue.png"; 
+        var blueMarker = "https://upload.wikimedia.org/wikipedia/commons/e/ec/Blue_marker.png"; // 확실한 파란색 마커 이미지
 
         // 마커 및 인포윈도우 저장할 배열
         var markers = [];
@@ -44,9 +44,9 @@
 
             // 조건에 따라 마커 색상 변경
             if (pos.title === "대구직영점") {
-                markerImage = new kakao.maps.MarkerImage(redMarker, new kakao.maps.Size(20, 40), { offset: new kakao.maps.Point(20, 40) });
+                markerImage = new kakao.maps.MarkerImage(redMarker, new kakao.maps.Size(40, 40), { offset: new kakao.maps.Point(20, 40) });
             } else if (pos.title === "목포직영점") {
-                markerImage = new kakao.maps.MarkerImage(blueMarker, new kakao.maps.Size(20, 40), { offset: new kakao.maps.Point(20, 40) });
+                markerImage = new kakao.maps.MarkerImage(blueMarker, new kakao.maps.Size(40, 40), { offset: new kakao.maps.Point(20, 40) });
             }
 
             var marker = new kakao.maps.Marker({
