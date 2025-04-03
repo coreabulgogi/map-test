@@ -8,7 +8,7 @@
 </head>
 <body>
 
-    <h1>프로-스펙스 매장현황(25.03기준)</h1>
+    <h1>프로-스펙스 매장현황(25.03기준)_Made by JeongHyeon</h1>
     <div id="map" style="width:1000px;height:800px;"></div>
 
     <script>
@@ -22,7 +22,6 @@
 
         // 마커 위치 리스트 (위도, 경도)
         var positions = [
-            
             { title: "광주충장로직영점", latlng: new kakao.maps.LatLng(35.1492, 126.9146) },
 	{ title: "노원직영점", latlng: new kakao.maps.LatLng(37.6532, 127.0613) },
 	{ title: "군산수송직영점", latlng: new kakao.maps.LatLng(35.9684, 126.7151) },
@@ -230,10 +229,11 @@
 	{ title: "신세계대전점", latlng: new kakao.maps.LatLng(36.3751, 127.3817) },
 	{ title: "오리지널스포츠신세계시흥점", latlng: new kakao.maps.LatLng(37.3796, 126.7369) },
 	{ title: "오리지널스포츠한남직영점", latlng: new kakao.maps.LatLng(37.5363, 127.0007) }
-
-            
-	        
+	
         ];
+
+        // 마커 및 인포윈도우 저장할 배열
+        var markers = [];
 
         // 마커 생성 및 지도에 표시
         positions.forEach(function(pos) {
@@ -243,13 +243,26 @@
                 title: pos.title // 마커 제목 (툴팁처럼 표시)
             });
 
-            // 마커 클릭 시 인포윈도우 표시
             var infowindow = new kakao.maps.InfoWindow({
                 content: `<div style="padding:5px;">${pos.title}</div>` 
             });
 
+            // 마커와 인포윈도우 상태를 저장하는 객체
+            markers.push({
+                marker: marker,
+                infowindow: infowindow,
+                isOpen: false
+            });
+
+            // 마커 클릭 시 인포윈도우 열고 닫기
             kakao.maps.event.addListener(marker, "click", function() {
-                infowindow.open(map, marker);
+                var markerData = markers.find(m => m.marker === marker);
+                if (markerData.isOpen) {
+                    markerData.infowindow.close();
+                } else {
+                    markerData.infowindow.open(map, marker);
+                }
+                markerData.isOpen = !markerData.isOpen; // 상태 반전
             });
         });
 
