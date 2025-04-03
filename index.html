@@ -251,6 +251,18 @@
             kakao.maps.event.addListener(marker, "click", function() {
                 infowindow.open(map, marker);
             });
+				
+		// 마커 클릭 시 표시 여부를 저장하는 변수
+        var isOpen = false;
+
+        // 마커 클릭 이벤트
+        kakao.maps.event.addListener(marker, 'click', function() {
+            if (isOpen) {
+                infowindow.close();
+            } else {
+                infowindow.open(map, marker);
+            }
+            isOpen = !isOpen; // 상태 반전
         });
 
     </script>
