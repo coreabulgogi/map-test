@@ -25,29 +25,40 @@
             { title: "광주충장로직영점", latlng: new kakao.maps.LatLng(35.1492, 126.9146) },
             { title: "노원직영점", latlng: new kakao.maps.LatLng(37.6532, 127.0613) },
             { title: "군산수송직영점", latlng: new kakao.maps.LatLng(35.9684, 126.7151) },
-            { title: "대구직영점", latlng: new kakao.maps.LatLng(35.8685, 128.5953) },
-            { title: "목포직영점", latlng: new kakao.maps.LatLng(34.7906, 126.3844) },
+            { title: "대구직영점", latlng: new kakao.maps.LatLng(35.8685, 128.5953) }, // 빨간색 마커
+            { title: "목포직영점", latlng: new kakao.maps.LatLng(34.7906, 126.3844) }, // 파란색 마커
             { title: "구미직영점", latlng: new kakao.maps.LatLng(36.1285, 128.3317) },
             { title: "덕천직영점", latlng: new kakao.maps.LatLng(35.2106, 129.0064) }
         ];
 
-        // 마커 이미지 정보 설정 (빨간색 마커)
-        var imageSrc = "https://t1.daumcdn.net/localimg/localimages/07/mapapidoc/marker_red.png"; 
-        var imageSize = new kakao.maps.Size(40, 40); // 마커 크기
-        var imageOption = { offset: new kakao.maps.Point(20, 40) }; // 마커 중심 조정
+        // 마커 색상별 이미지 URL
+        var redMarker = "https://t1.daumcdn.net/localimg/localimages/07/mapapidoc/marker_red.png"; 
+        var blueMarker = "https://t1.daumcdn.net/localimg/localimages/07/mapapidoc/marker_blue.png"; 
+        var defaultMarker = "https://t1.daumcdn.net/localimg/localimages/07/mapapidoc/marker_green.png"; // 기본 색상
 
         // 마커 및 인포윈도우 저장할 배열
         var markers = [];
 
         // 마커 생성 및 지도에 표시
         positions.forEach(function(pos) {
-            var markerImage = new kakao.maps.MarkerImage(imageSrc, imageSize, imageOption);
+            var imageSrc;
+            
+            // 조건에 따라 마커 색상 변경
+            if (pos.title === "대구직영점") {
+                imageSrc = redMarker; // 빨간색
+            } else if (pos.title === "목포직영점") {
+                imageSrc = blueMarker; // 파란색
+            } else {
+                imageSrc = defaultMarker; // 기본 색상
+            }
+
+            var markerImage = new kakao.maps.MarkerImage(imageSrc, new kakao.maps.Size(40, 40), { offset: new kakao.maps.Point(20, 40) });
 
             var marker = new kakao.maps.Marker({
-                map: map, // 마커를 표시할 지도
-                position: pos.latlng, // 마커의 위치
-                title: pos.title, // 마커 제목 (툴팁처럼 표시)
-                image: markerImage // 커스텀 마커 이미지 적용
+                map: map,
+                position: pos.latlng,
+                title: pos.title,
+                image: markerImage // 마커 색상 적용
             });
 
             var infowindow = new kakao.maps.InfoWindow({
