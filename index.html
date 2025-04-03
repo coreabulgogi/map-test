@@ -34,31 +34,26 @@
         // 마커 색상별 이미지 URL
         var redMarker = "https://t1.daumcdn.net/localimg/localimages/07/mapapidoc/marker_red.png"; 
         var blueMarker = "https://t1.daumcdn.net/localimg/localimages/07/mapapidoc/marker_blue.png"; 
-        var defaultMarker = "https://t1.daumcdn.net/localimg/localimages/07/mapapidoc/marker_green.png"; // 기본 색상
 
         // 마커 및 인포윈도우 저장할 배열
         var markers = [];
 
         // 마커 생성 및 지도에 표시
         positions.forEach(function(pos) {
-            var imageSrc;
-            
+            var markerImage = null; // 기본 마커 (null이면 카카오 기본 마커 사용)
+
             // 조건에 따라 마커 색상 변경
             if (pos.title === "대구직영점") {
-                imageSrc = redMarker; // 빨간색
+                markerImage = new kakao.maps.MarkerImage(redMarker, new kakao.maps.Size(40, 40), { offset: new kakao.maps.Point(20, 40) });
             } else if (pos.title === "목포직영점") {
-                imageSrc = blueMarker; // 파란색
-            } else {
-                imageSrc = defaultMarker; // 기본 색상
+                markerImage = new kakao.maps.MarkerImage(blueMarker, new kakao.maps.Size(40, 40), { offset: new kakao.maps.Point(20, 40) });
             }
-
-            var markerImage = new kakao.maps.MarkerImage(imageSrc, new kakao.maps.Size(40, 40), { offset: new kakao.maps.Point(20, 40) });
 
             var marker = new kakao.maps.Marker({
                 map: map,
                 position: pos.latlng,
                 title: pos.title,
-                image: markerImage // 마커 색상 적용
+                image: markerImage // 기본 마커면 null로 둠 (카카오 기본 마커 사용)
             });
 
             var infowindow = new kakao.maps.InfoWindow({
