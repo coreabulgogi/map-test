@@ -3,28 +3,49 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>kakao map</title>
+    <title>Kakao Map - Multiple Markers</title>
     <script type="text/javascript" src="https://dapi.kakao.com/v2/maps/sdk.js?appkey=6956432726c3dc8f834ab6cf0dea4cd4"></script>
 </head>
 <body>
 
-    <h1>매장현황</h1>
+    <h1>여러 개의 마커 표시</h1>
     <div id="map" style="width:1000px;height:800px;"></div>
 
     <script>
-        var container = document.getElementById('map'); // 지도를 표시할 div
+        var container = document.getElementById('map'); 
         var options = {
-            center: new kakao.maps.LatLng(37.5665, 126.9780), // 초기 지도 중심 (서울 좌표)
-            level: 4 // 지도 확대 레벨 (낮을수록 확대)
+            center: new kakao.maps.LatLng(37.5665, 126.9780), // 서울 중심 좌표
+            level: 4 
         };
 
         var map = new kakao.maps.Map(container, options); // 지도 생성
-    // 마커 추가
-	    var markerPosition = new kakao.maps.LatLng(37.5665, 126.9780); // 서울
-	    var marker = new kakao.maps.Marker({
-        position: markerPosition
-    });
-    marker.setMap(map); // 마커를 지도에 표시
+
+        // 마커 위치 리스트 (위도, 경도)
+        var positions = [
+            { title: "서울", latlng: new kakao.maps.LatLng(37.5665, 126.9780) },
+            { title: "부산", latlng: new kakao.maps.LatLng(35.1796, 129.0756) },
+            { title: "대구", latlng: new kakao.maps.LatLng(35.8714, 128.6014) },
+            { title: "광주", latlng: new kakao.maps.LatLng(35.1595, 126.8526) },
+            { title: "대전", latlng: new kakao.maps.LatLng(36.3504, 127.3845) }
+        ];
+
+        // 마커 생성 및 지도에 표시
+        positions.forEach(function(pos) {
+            var marker = new kakao.maps.Marker({
+                map: map, // 마커를 표시할 지도
+                position: pos.latlng, // 마커의 위치
+                title: pos.title // 마커 제목 (툴팁처럼 표시)
+            });
+
+            // 마커 클릭 시 인포윈도우 표시
+            var infowindow = new kakao.maps.InfoWindow({
+                content: `<div style="padding:5px;">${pos.title}</div>` 
+            });
+
+            kakao.maps.event.addListener(marker, "click", function() {
+                infowindow.open(map, marker);
+            });
+        });
 
     </script>
 
