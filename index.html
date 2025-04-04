@@ -30,6 +30,21 @@
 
     var markers = [];
 
+    // 🔹 마커 점프 애니메이션 함수
+    function animateMarker(marker) {
+      var currentPosition = marker.getPosition();
+      var upPosition = new kakao.maps.LatLng(
+        currentPosition.getLat() - 0.0003, // 살짝 위로 이동
+        currentPosition.getLng()
+      );
+
+      // 0.2초 동안 위로 이동했다가 원래 위치로 돌아옴
+      marker.setPosition(upPosition);
+      setTimeout(() => {
+        marker.setPosition(currentPosition);
+      }, 200);
+    }
+
     // 매장 마커 생성
     positions.forEach(function(pos) {
       var marker = new kakao.maps.Marker({
@@ -56,23 +71,11 @@
           markerData.infowindow.open(map, marker);
         }
         markerData.isOpen = !markerData.isOpen;
+
+        // 🔹 마커 클릭 시 점프 애니메이션 실행
+        animateMarker(marker);
       });
     });
-
-    // 🔹 마커 점프 애니메이션 함수
-    function animateMarker(marker) {
-      var currentPosition = marker.getPosition();
-      var upPosition = new kakao.maps.LatLng(
-        currentPosition.getLat() - 0.0003, // 살짝 위로 이동
-        currentPosition.getLng()
-      );
-
-      // 0.2초 동안 위로 이동했다가 원래 위치로 돌아옴
-      marker.setPosition(upPosition);
-      setTimeout(() => {
-        marker.setPosition(currentPosition);
-      }, 200);
-    }
 
     // 사용자 현재 위치 표시
     if (navigator.geolocation) {
@@ -108,11 +111,11 @@
           }
           isUserInfoOpen = !isUserInfoOpen;
 
-          // 🔹 마커 클릭 시 점프 애니메이션 실행
+          // 🔹 현재 위치 마커 클릭 시 점프 애니메이션 실행
           animateMarker(userMarker);
         });
 
-        // 🔹 마커가 처음 나타날 때 1초 후 점프 애니메이션 실행
+        // 🔹 현재 위치 마커가 처음 나타날 때 점프 애니메이션 실행
         setTimeout(() => {
           animateMarker(userMarker);
         }, 1000);
