@@ -14,13 +14,12 @@
   <script>
     var container = document.getElementById('map');
     var options = {
-      center: new kakao.maps.LatLng(36.4074, 128.1565), // 경북상주 좌표
+      center: new kakao.maps.LatLng(36.4074, 128.1565),
       level: 12
     };
 
     var map = new kakao.maps.Map(container, options);
 
-    // 매장 위치
     var positions = [
       { title: "광주충장로직영점", latlng: new kakao.maps.LatLng(35.1492, 126.9146) },
       { title: "노원직영점", latlng: new kakao.maps.LatLng(37.6532, 127.0613) },
@@ -30,22 +29,31 @@
 
     var markers = [];
 
-    // 🔹 마커 점프 애니메이션 함수
-    function animateMarker(marker) {
-      var currentPosition = marker.getPosition();
+    // 🔹 더 부드러운 점프 애니메이션 함수
+    function smoothJump(marker) {
+      var startPosition = marker.getPosition();
+      var step = 0.00005; // 한 번에 움직이는 거리 (값이 작을수록 부드러움)
       var upPosition = new kakao.maps.LatLng(
-        currentPosition.getLat() - 0.0003, // 살짝 위로 이동
-        currentPosition.getLng()
+        startPosition.getLat() - 0.0003,
+        startPosition.getLng()
       );
 
-      // 0.2초 동안 위로 이동했다가 원래 위치로 돌아옴
-      marker.setPosition(upPosition);
-      setTimeout(() => {
-        marker.setPosition(currentPosition);
-      }, 200);
+      var count = 0;
+      var interval = setInterval(() => {
+        var newLat = startPosition.getLat() - step * count;
+        marker.setPosition(new kakao.maps.LatLng(newLat, startPosition.getLng()));
+        
+        count++;
+
+        if (count > 6) { // 6단계에 걸쳐 이동 (0.4초)
+          clearInterval(interval);
+          setTimeout(() => {
+            marker.setPosition(startPosition);
+          }, 200);
+        }
+      }, 50); // 50ms 간격으로 이동 (부드러운 애니메이션)
     }
 
-    // 매장 마커 생성
     positions.forEach(function(pos) {
       var marker = new kakao.maps.Marker({
         map: map,
@@ -72,12 +80,11 @@
         }
         markerData.isOpen = !markerData.isOpen;
 
-        // 🔹 마커 클릭 시 점프 애니메이션 실행
-        animateMarker(marker);
+        // 🔹 부드러운 점프 애니메이션 실행
+        smoothJump(marker);
       });
     });
 
-    // 사용자 현재 위치 표시
     if (navigator.geolocation) {
       navigator.geolocation.getCurrentPosition(function(position) {
         var lat = position.coords.latitude;
@@ -111,13 +118,13 @@
           }
           isUserInfoOpen = !isUserInfoOpen;
 
-          // 🔹 현재 위치 마커 클릭 시 점프 애니메이션 실행
-          animateMarker(userMarker);
+          // 🔹 현재 위치 마커도 점프 애니메이션 적용
+          smoothJump(userMarker);
         });
 
         // 🔹 현재 위치 마커가 처음 나타날 때 점프 애니메이션 실행
         setTimeout(() => {
-          animateMarker(userMarker);
+          smoothJump(userMarker);
         }, 1000);
 
       }, function(error) {
