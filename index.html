@@ -14,12 +14,13 @@
   <script>
     var container = document.getElementById('map');
     var options = {
-      center: new kakao.maps.LatLng(36.4074, 128.1565),
+      center: new kakao.maps.LatLng(36.4074, 128.1565), // 경북상주 좌표
       level: 12
     };
 
     var map = new kakao.maps.Map(container, options);
 
+    // 매장 위치
     var positions = [
       { title: "광주충장로직영점", latlng: new kakao.maps.LatLng(35.1492, 126.9146) },
       { title: "노원직영점", latlng: new kakao.maps.LatLng(37.6532, 127.0613) },
@@ -29,31 +30,16 @@
 
     var markers = [];
 
-    // 🔹 더 부드러운 점프 애니메이션 함수
-    function smoothJump(marker) {
-      var startPosition = marker.getPosition();
-      var step = 0.00005; // 한 번에 움직이는 거리 (값이 작을수록 부드러움)
-      var upPosition = new kakao.maps.LatLng(
-        startPosition.getLat() - 0.0003,
-        startPosition.getLng()
-      );
-
-      var count = 0;
-      var interval = setInterval(() => {
-        var newLat = startPosition.getLat() - step * count;
-        marker.setPosition(new kakao.maps.LatLng(newLat, startPosition.getLng()));
-        
-        count++;
-
-        if (count > 6) { // 6단계에 걸쳐 이동 (0.4초)
-          clearInterval(interval);
-          setTimeout(() => {
-            marker.setPosition(startPosition);
-          }, 200);
-        }
-      }, 50); // 50ms 간격으로 이동 (부드러운 애니메이션)
+    // 깜빡이는 애니메이션 함수
+    function blinkMarker(marker) {
+      var opacity = 1;
+      setInterval(() => {
+        opacity = opacity === 1 ? 0.3 : 1; // 0.3(반투명) ↔ 1(불투명)
+        marker.setOpacity(opacity);
+      }, 500); // 0.5초마다 변경
     }
 
+    // 매장 마커 생성
     positions.forEach(function(pos) {
       var marker = new kakao.maps.Marker({
         map: map,
@@ -79,24 +65,27 @@
           markerData.infowindow.open(map, marker);
         }
         markerData.isOpen = !markerData.isOpen;
-
-        // 🔹 부드러운 점프 애니메이션 실행
-        smoothJump(marker);
       });
+
+      // 깜빡이는 효과 적용
+      blinkMarker(marker);
     });
 
+    // 사용자 현재 위치 표시
     if (navigator.geolocation) {
       navigator.geolocation.getCurrentPosition(function(position) {
         var lat = position.coords.latitude;
         var lon = position.coords.longitude;
         var locPosition = new kakao.maps.LatLng(lat, lon);
         
+        // 사용자 위치 마커 이미지 설정
         var markerImage = new kakao.maps.MarkerImage(
           "https://t1.daumcdn.net/localimg/localimages/07/mapapidoc/markerStar.png",
           new kakao.maps.Size(24, 35),
           { offset: new kakao.maps.Point(12, 35) }
         );
 
+        // 마커 생성
         var userMarker = new kakao.maps.Marker({
           map: map,
           position: locPosition,
@@ -117,15 +106,10 @@
             userInfowindow.open(map, userMarker);
           }
           isUserInfoOpen = !isUserInfoOpen;
-
-          // 🔹 현재 위치 마커도 점프 애니메이션 적용
-          smoothJump(userMarker);
         });
 
-        // 🔹 현재 위치 마커가 처음 나타날 때 점프 애니메이션 실행
-        setTimeout(() => {
-          smoothJump(userMarker);
-        }, 1000);
+        // 현재 위치 마커에도 깜빡이는 효과 적용
+        blinkMarker(userMarker);
 
       }, function(error) {
         alert("위치 정보를 가져올 수 없습니다.");
