@@ -1,90 +1,109 @@
 <!DOCTYPE html>
 <html lang="ko">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Kakao Map - Multiple Markers</title>
-    <script type="text/javascript" src="https://dapi.kakao.com/v2/maps/sdk.js?appkey=6956432726c3dc8f834ab6cf0dea4cd4"></script>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Kakao Map - Multiple Markers</title>
+  <script type="text/javascript" src="https://dapi.kakao.com/v2/maps/sdk.js?appkey=6956432726c3dc8f834ab6cf0dea4cd4"></script>
 </head>
 <body>
 
-    <h1>프로-스펙스 매장현황(25.03기준)_Made by JeongHyeon</h1>
-    <div id="map" style="width:1000px;height:800px;"></div>
+  <h1>프로-스펙스 매장현황(25.03기준)_Made by JeongHyeon</h1>
+  <div id="map" style="width:1000px;height:800px;"></div>
 
-    <script>
-        var container = document.getElementById('map'); 
-        var options = {
-            center: new kakao.maps.LatLng(36.4074, 128.1565), // 기본 중심 좌표 (경북 상주)
-            level: 12 
-        };
+  <script>
+    var container = document.getElementById('map');
+    var options = {
+      center: new kakao.maps.LatLng(36.4074, 128.1565), // 경북상주 좌표
+      level: 12
+    };
 
-        var map = new kakao.maps.Map(container, options);
+    var map = new kakao.maps.Map(container, options);
 
-        // 마커 위치 리스트 (위도, 경도)
-        var positions = [
-            { title: "광주충장로직영점", latlng: new kakao.maps.LatLng(35.1492, 126.9146) },
-            { title: "노원직영점", latlng: new kakao.maps.LatLng(37.6532, 127.0613) },
-            { title: "군산수송직영점", latlng: new kakao.maps.LatLng(35.9684, 126.7151) },
-            { title: "오리지널스포츠한남직영점", latlng: new kakao.maps.LatLng(37.5363, 127.0007) }
-        ];
+    // 매장 위치
+    var positions = [
+      { title: "광주충장로직영점", latlng: new kakao.maps.LatLng(35.1492, 126.9146) },
+      { title: "노원직영점", latlng: new kakao.maps.LatLng(37.6532, 127.0613) },
+      { title: "군산수송직영점", latlng: new kakao.maps.LatLng(35.9684, 126.7151) },
+      { title: "오리지널스포츠한남직영점", latlng: new kakao.maps.LatLng(37.5363, 127.0007) }
+    ];
 
-        // 매장 마커 추가
-        positions.forEach(function(pos) {
-            var marker = new kakao.maps.Marker({
-                map: map,
-                position: pos.latlng,
-                title: pos.title
-            });
+    var markers = [];
 
-            var infowindow = new kakao.maps.InfoWindow({
-                content: `<div style="padding:5px;">${pos.title}</div>` 
-            });
+    // 매장 마커 생성
+    positions.forEach(function(pos) {
+      var marker = new kakao.maps.Marker({
+        map: map,
+        position: pos.latlng,
+        title: pos.title
+      });
 
-            kakao.maps.event.addListener(marker, "click", function() {
-                infowindow.open(map, marker);
-            });
+      var infowindow = new kakao.maps.InfoWindow({
+        content: `<div style="padding:5px;">${pos.title}</div>`
+      });
+
+      markers.push({
+        marker: marker,
+        infowindow: infowindow,
+        isOpen: false
+      });
+
+      kakao.maps.event.addListener(marker, "click", function() {
+        var markerData = markers.find(m => m.marker === marker);
+        if (markerData.isOpen) {
+          markerData.infowindow.close();
+        } else {
+          markerData.infowindow.open(map, marker);
+        }
+        markerData.isOpen = !markerData.isOpen;
+      });
+    });
+
+    // 사용자 현재 위치 표시
+    if (navigator.geolocation) {
+      navigator.geolocation.getCurrentPosition(function(position) {
+        var lat = position.coords.latitude;
+        var lon = position.coords.longitude;
+        var locPosition = new kakao.maps.LatLng(lat, lon);
+        
+        // 사용자 위치 마커 이미지 설정
+        var markerImage = new kakao.maps.MarkerImage(
+          "https://t1.daumcdn.net/localimg/localimages/07/mapapidoc/markerStar.png",
+          new kakao.maps.Size(24, 35),
+          { offset: new kakao.maps.Point(12, 35) }
+        );
+
+        // 마커 생성
+        var userMarker = new kakao.maps.Marker({
+          map: map,
+          position: locPosition,
+          title: "현재 위치",
+          image: markerImage
         });
 
-        // 현재 위치 가져오기
-        if (navigator.geolocation) {
-            navigator.geolocation.getCurrentPosition(function(position) {
-                var lat = position.coords.latitude;
-                var lon = position.coords.longitude;
-                var locPosition = new kakao.maps.LatLng(lat, lon);
+        var userInfowindow = new kakao.maps.InfoWindow({
+          content: "<div style='padding:5px;'>현재 위치</div>"
+        });
 
-                // 현재 위치 마커 이미지
-                var markerImage = new kakao.maps.MarkerImage(
-                    "https://t1.daumcdn.net/localimg/localimages/07/mapapidoc/markerStar.png",
-                    new kakao.maps.Size(24, 35),
-                    { offset: new kakao.maps.Point(16, 32) }
-                );
+        // 인포윈도우 열림 상태 저장
+        var isUserInfoOpen = false;
 
-                // 현재 위치 마커 생성
-                var userMarker = new kakao.maps.Marker({
-                    map: map,
-                    position: locPosition,
-                    image: markerImage
-                });
+        kakao.maps.event.addListener(userMarker, 'click', function() {
+          if (isUserInfoOpen) {
+            userInfowindow.close();
+          } else {
+            userInfowindow.open(map, userMarker);
+          }
+          isUserInfoOpen = !isUserInfoOpen;
+        });
 
-                // 현재 위치 인포윈도우
-                var infowindow = new kakao.maps.InfoWindow({
-                    content: `<div style="padding:5px;">내 위치</div>`
-                });
-
-                // 마커 클릭 시 인포윈도우 열기
-                kakao.maps.event.addListener(userMarker, "click", function() {
-                    infowindow.open(map, userMarker);
-                });
-
-                // 지도 중심을 현재 위치로 이동
-                map.setCenter(locPosition);
-            }, function(error) {
-                console.error("위치 정보를 가져올 수 없습니다.", error);
-            });
-        } else {
-            alert("이 브라우저는 위치 정보를 지원하지 않습니다.");
-        }
-    </script>
+      }, function(error) {
+        alert("위치 정보를 가져올 수 없습니다.");
+      });
+    } else {
+      alert("이 브라우저는 위치 정보를 지원하지 않습니다.");
+    }
+  </script>
 
 </body>
 </html>
