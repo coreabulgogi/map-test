@@ -28,13 +28,16 @@
     const containerA = document.getElementById('mapA');
     const containerB = document.getElementById('mapB');
 
+    // 중심좌표: 경북 상주
+    const sangjuCenter = new kakao.maps.LatLng(36.4074, 128.1565);
+
     const mapA = new kakao.maps.Map(containerA, {
-      center: new kakao.maps.LatLng(36.4074, 128.1565), // 경북 상주 좌표
+      center: sangjuCenter,
       level: 12
     });
 
     const mapB = new kakao.maps.Map(containerB, {
-      center: new kakao.maps.LatLng(36.4074, 128.1565), // 경북 상주 좌표
+      center: sangjuCenter,
       level: 12
     });
 
@@ -68,7 +71,7 @@
     createMarkers(mapA, markersA);
     createMarkers(mapB, markersB);
 
-    // 현재 위치 표시 함수
+    // 현재 위치 마커 표시 (지도 중심은 변경하지 않음)
     function showCurrentLocationOnMap(map) {
       if (navigator.geolocation) {
         navigator.geolocation.getCurrentPosition(function(position) {
@@ -97,6 +100,7 @@
             infowindow.open(map, userMarker);
           });
 
+          // 중심을 현재 위치로 변경하지 않음
         }, function() {
           alert("위치 정보를 가져올 수 없습니다.");
         });
@@ -105,19 +109,21 @@
       }
     }
 
-    // 초기 위치 표시
     showCurrentLocationOnMap(mapA);
     showCurrentLocationOnMap(mapB);
 
+    // 지도 전환 및 중심 재설정
     function showMap(mapId) {
       containerA.classList.remove('active');
       containerB.classList.remove('active');
 
       if (mapId === 'A') {
         containerA.classList.add('active');
+        mapA.setCenter(sangjuCenter); // 중심을 상주로 설정
         mapA.relayout();
       } else if (mapId === 'B') {
         containerB.classList.add('active');
+        mapB.setCenter(sangjuCenter); // 중심을 상주로 설정
         mapB.relayout();
       }
     }
@@ -125,4 +131,3 @@
 
 </body>
 </html>
-	
