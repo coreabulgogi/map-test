@@ -25,21 +25,30 @@
   <div id="mapB"></div>
 
   <script>
-    var mapA = new kakao.maps.Map(document.getElementById('mapA'), {
+    var containerA = document.getElementById('mapA');
+    var containerB = document.getElementById('mapB');
+
+    var mapA = new kakao.maps.Map(containerA, {
       center: new kakao.maps.LatLng(36.4074, 128.1565),
       level: 6
     });
 
-    var mapB = new kakao.maps.Map(document.getElementById('mapB'), {
+    var mapB = new kakao.maps.Map(containerB, {
       center: new kakao.maps.LatLng(37.5665, 126.9780), // 서울 시청
       level: 6
     });
 
     function showMap(mapId) {
-      document.getElementById('mapA').classList.remove('active');
-      document.getElementById('mapB').classList.remove('active');
+      containerA.classList.remove('active');
+      containerB.classList.remove('active');
 
-      document.getElementById('map' + mapId).classList.add('active');
+      if (mapId === 'A') {
+        containerA.classList.add('active');
+        mapA.relayout(); // A지도 크기 재계산
+      } else if (mapId === 'B') {
+        containerB.classList.add('active');
+        mapB.relayout(); // B지도 크기 재계산
+      }
     }
   </script>
 
