@@ -25,29 +25,65 @@
   <div id="mapB"></div>
 
   <script>
-    var containerA = document.getElementById('mapA');
-    var containerB = document.getElementById('mapB');
+    const containerA = document.getElementById('mapA');
+    const containerB = document.getElementById('mapB');
 
-    var mapA = new kakao.maps.Map(containerA, {
+    // 지도 A와 B 초기화
+    const mapA = new kakao.maps.Map(containerA, {
       center: new kakao.maps.LatLng(36.4074, 128.1565),
       level: 6
     });
 
-    var mapB = new kakao.maps.Map(containerB, {
-      center: new kakao.maps.LatLng(37.5665, 126.9780), // 서울 시청
+    const mapB = new kakao.maps.Map(containerB, {
+      center: new kakao.maps.LatLng(37.5665, 126.9780),
       level: 6
     });
 
+    // 지도 A 마커 리스트
+    const markersA = [
+      { title: "광주충장로직영점", latlng: new kakao.maps.LatLng(35.1492, 126.9146) },
+      { title: "노원직영점", latlng: new kakao.maps.LatLng(37.6532, 127.0613) }
+    ];
+
+    // 지도 B 마커 리스트
+    const markersB = [
+      { title: "구미직영점", latlng: new kakao.maps.LatLng(36.1285, 128.3317) }
+    ];
+
+    // 마커 생성 함수
+    function createMarkers(map, markerList) {
+      markerList.forEach(pos => {
+        const marker = new kakao.maps.Marker({
+          map: map,
+          position: pos.latlng,
+          title: pos.title
+        });
+
+        const infowindow = new kakao.maps.InfoWindow({
+          content: `<div style="padding:5px;">${pos.title}</div>`
+        });
+
+        kakao.maps.event.addListener(marker, 'click', function () {
+          infowindow.open(map, marker);
+        });
+      });
+    }
+
+    // 마커 생성 실행
+    createMarkers(mapA, markersA);
+    createMarkers(mapB, markersB);
+
+    // 지도 전환 함수
     function showMap(mapId) {
       containerA.classList.remove('active');
       containerB.classList.remove('active');
 
       if (mapId === 'A') {
         containerA.classList.add('active');
-        mapA.relayout(); // A지도 크기 재계산
+        mapA.relayout();
       } else if (mapId === 'B') {
         containerB.classList.add('active');
-        mapB.relayout(); // B지도 크기 재계산
+        mapB.relayout();
       }
     }
   </script>
