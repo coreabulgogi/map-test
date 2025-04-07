@@ -29,13 +29,13 @@
     const containerB = document.getElementById('mapB');
 
     const mapA = new kakao.maps.Map(containerA, {
-      center: new kakao.maps.LatLng(36.4074, 128.1565),
-      level: 6
+      center: new kakao.maps.LatLng(36.4074, 128.1565), // 경북 상주 좌표
+      level: 12
     });
 
     const mapB = new kakao.maps.Map(containerB, {
-      center: new kakao.maps.LatLng(37.5665, 126.9780),
-      level: 6
+      center: new kakao.maps.LatLng(36.4074, 128.1565), // 경북 상주 좌표
+      level: 12
     });
 
     const markersA = [
@@ -125,3 +125,4 @@
 
 </body>
 </html>
+	
