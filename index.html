@@ -22,7 +22,6 @@
       margin-right: 10px;
     }
   </style>
-  <script type="text/javascript" src="https://dapi.kakao.com/v2/maps/sdk.js?appkey=6956432726c3dc8f834ab6cf0dea4cd4"></script>
 </head>
 <body>
 
@@ -35,50 +34,58 @@
   <div id="mapA" class="active"></div>
   <div id="mapB"></div>
 
+  <!-- Kakao Map SDK는 defer 속성을 사용하여 body 끝에 위치 -->
+  <script src="https://dapi.kakao.com/v2/maps/sdk.js?appkey=6956432726c3dc8f834ab6cf0dea4cd4&autoload=false" defer></script>
+  
   <script>
-    // A 지도 (서울)
-    var mapAContainer = document.getElementById('mapA');
-    var mapAOptions = {
-      center: new kakao.maps.LatLng(37.5665, 126.9780), // 서울
-      level: 7
+    // SDK 로드 후 실행될 콜백
+    window.onload = function () {
+      kakao.maps.load(function () {
+        // A 지도 (서울)
+        var mapAContainer = document.getElementById('mapA');
+        var mapAOptions = {
+          center: new kakao.maps.LatLng(37.5665, 126.9780),
+          level: 7
+        };
+        var mapA = new kakao.maps.Map(mapAContainer, mapAOptions);
+
+        var markerA = new kakao.maps.Marker({
+          map: mapA,
+          position: new kakao.maps.LatLng(37.5665, 126.9780),
+          title: "서울 마커"
+        });
+
+        // B 지도 (부산)
+        var mapBContainer = document.getElementById('mapB');
+        var mapBOptions = {
+          center: new kakao.maps.LatLng(35.1796, 129.0756),
+          level: 7
+        };
+        var mapB = new kakao.maps.Map(mapBContainer, mapBOptions);
+
+        var markerB = new kakao.maps.Marker({
+          map: mapB,
+          position: new kakao.maps.LatLng(35.1796, 129.0756),
+          title: "부산 마커"
+        });
+
+        // 지도 전환 함수
+        window.showMap = function (mapType) {
+          document.getElementById('mapA').classList.remove('active');
+          document.getElementById('mapB').classList.remove('active');
+
+          if (mapType === 'A') {
+            document.getElementById('mapA').classList.add('active');
+            mapA.relayout();
+            mapA.setCenter(new kakao.maps.LatLng(37.5665, 126.9780));
+          } else {
+            document.getElementById('mapB').classList.add('active');
+            mapB.relayout();
+            mapB.setCenter(new kakao.maps.LatLng(35.1796, 129.0756));
+          }
+        };
+      });
     };
-    var mapA = new kakao.maps.Map(mapAContainer, mapAOptions);
-
-    var markerA = new kakao.maps.Marker({
-      map: mapA,
-      position: new kakao.maps.LatLng(37.5665, 126.9780),
-      title: "서울 마커"
-    });
-
-    // B 지도 (부산)
-    var mapBContainer = document.getElementById('mapB');
-    var mapBOptions = {
-      center: new kakao.maps.LatLng(35.1796, 129.0756), // 부산
-      level: 7
-    };
-    var mapB = new kakao.maps.Map(mapBContainer, mapBOptions);
-
-    var markerB = new kakao.maps.Marker({
-      map: mapB,
-      position: new kakao.maps.LatLng(35.1796, 129.0756),
-      title: "부산 마커"
-    });
-
-    // 지도 전환 함수
-    function showMap(mapType) {
-      document.getElementById('mapA').classList.remove('active');
-      document.getElementById('mapB').classList.remove('active');
-
-      if (mapType === 'A') {
-        document.getElementById('mapA').classList.add('active');
-        mapA.relayout(); // 크기 재설정
-        mapA.setCenter(new kakao.maps.LatLng(37.5665, 126.9780));
-      } else {
-        document.getElementById('mapB').classList.add('active');
-        mapB.relayout();
-        mapB.setCenter(new kakao.maps.LatLng(35.1796, 129.0756));
-      }
-    }
   </script>
 
 </body>
