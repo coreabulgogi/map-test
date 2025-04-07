@@ -3,8 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>여러 Kakao 지도 전환</title>
-  <script type="text/javascript" src="https://dapi.kakao.com/v2/maps/sdk.js?appkey=6956432726c3dc8f834ab6cf0dea4cd4"></script>
+  <title>Kakao Map - A & B 지도 전환</title>
   <style>
     #mapA, #mapB {
       width: 1000px;
@@ -14,55 +13,114 @@
     .active {
       display: block;
     }
+    .button-wrap {
+      margin-bottom: 10px;
+    }
+    button {
+      margin-right: 10px;
+      padding: 8px 16px;
+    }
   </style>
+  <script src="https://dapi.kakao.com/v2/maps/sdk.js?appkey=6956432726c3dc8f834ab6cf0dea4cd4&autoload=false"></script>
 </head>
 <body>
 
-  <h1>지도 전환 예제</h1>
-  <button onclick="showMap('A')">지도 A 보기</button>
-  <button onclick="showMap('B')">지도 B 보기</button>
-
+  <h1>프로-스펙스 매장현황(25.03기준)_Made by JeongHyeon</h1>
+  <div class="button-wrap">
+    <button onclick="showMap('A')">A 지도 보기</button>
+    <button onclick="showMap('B')">B 지도 보기</button>
+  </div>
   <div id="mapA" class="active"></div>
   <div id="mapB"></div>
 
   <script>
-    // 지도 컨테이너
-    var mapAContainer = document.getElementById('mapA');
-    var mapBContainer = document.getElementById('mapB');
+    kakao.maps.load(function () {
+      // A 지도 생성
+      var mapAContainer = document.getElementById('mapA');
+      var mapA = new kakao.maps.Map(mapAContainer, {
+        center: new kakao.maps.LatLng(36.4074, 128.1565),
+        level: 12
+      });
 
-    // 지도 A 생성
-    var mapA = new kakao.maps.Map(mapAContainer, {
-      center: new kakao.maps.LatLng(36.4074, 128.1565), // 경북 상주
-      level: 12
-    });
+      var positionsA = [
+        { title: "광주충장로직영점", latlng: new kakao.maps.LatLng(35.1492, 126.9146) },
+        { title: "노원직영점", latlng: new kakao.maps.LatLng(37.6532, 127.0613) },
+        { title: "군산수송직영점", latlng: new kakao.maps.LatLng(35.9684, 126.7151) },
+        { title: "오리지널스포츠한남직영점", latlng: new kakao.maps.LatLng(37.5363, 127.0007) }
+      ];
 
-    // 지도 B 생성
-    var mapB = new kakao.maps.Map(mapBContainer, {
-      center: new kakao.maps.LatLng(37.5665, 126.9780), // 서울
-      level: 12
-    });
+      positionsA.forEach(function(pos) {
+        var marker = new kakao.maps.Marker({
+          map: mapA,
+          position: pos.latlng,
+          title: pos.title
+        });
 
-    // 지도 전환 함수
-    function showMap(mapId) {
-      // 모든 지도 숨김
-      mapAContainer.classList.remove('active');
-      mapBContainer.classList.remove('active');
+        var infowindow = new kakao.maps.InfoWindow({
+          content: `<div style="padding:5px;">${pos.title}</div>`
+        });
 
-      if (mapId === 'A') {
-        mapAContainer.classList.add('active');
-        // 약간의 지연 후 relayout 적용
-        setTimeout(function() {
+        var isOpen = false;
+
+        kakao.maps.event.addListener(marker, 'click', function() {
+          if (isOpen) {
+            infowindow.close();
+          } else {
+            infowindow.open(mapA, marker);
+          }
+          isOpen = !isOpen;
+        });
+      });
+
+      // B 지도 생성
+      var mapBContainer = document.getElementById('mapB');
+      var mapB = new kakao.maps.Map(mapBContainer, {
+        center: new kakao.maps.LatLng(37.5665, 126.9780),
+        level: 11
+      });
+
+      var positionsB = [
+        { title: "대구직영점", latlng: new kakao.maps.LatLng(35.8685, 128.5953) },
+        { title: "목포직영점", latlng: new kakao.maps.LatLng(34.7906, 126.3844) }
+      ];
+
+      positionsB.forEach(function(pos) {
+        var marker = new kakao.maps.Marker({
+          map: mapB,
+          position: pos.latlng,
+          title: pos.title
+        });
+
+        var infowindow = new kakao.maps.InfoWindow({
+          content: `<div style="padding:5px;">${pos.title}</div>`
+        });
+
+        var isOpen = false;
+
+        kakao.maps.event.addListener(marker, 'click', function() {
+          if (isOpen) {
+            infowindow.close();
+          } else {
+            infowindow.open(mapB, marker);
+          }
+          isOpen = !isOpen;
+        });
+      });
+
+      // 지도 전환 함수
+      window.showMap = function(mapType) {
+        document.getElementById('mapA').classList.remove('active');
+        document.getElementById('mapB').classList.remove('active');
+
+        if (mapType === 'A') {
+          document.getElementById('mapA').classList.add('active');
           mapA.relayout();
-          mapA.setCenter(new kakao.maps.LatLng(36.4074, 128.1565));
-        }, 0);
-      } else {
-        mapBContainer.classList.add('active');
-        setTimeout(function() {
+        } else {
+          document.getElementById('mapB').classList.add('active');
           mapB.relayout();
-          mapB.setCenter(new kakao.maps.LatLng(37.5665, 126.9780));
-        }, 0);
-      }
-    }
+        }
+      };
+    });
   </script>
 
 </body>
