@@ -10,7 +10,7 @@
       height: 800px;
       display: none;
     }
-    #mapA.active, #mapB.active {
+    .active {
       display: block;
     }
   </style>
@@ -25,21 +25,39 @@
   <div id="mapB"></div>
 
   <script>
-    var mapA = new kakao.maps.Map(document.getElementById('mapA'), {
+    // 지도 A 생성
+    var mapAContainer = document.getElementById('mapA');
+    var mapA = new kakao.maps.Map(mapAContainer, {
       center: new kakao.maps.LatLng(36.4074, 128.1565),
       level: 12
     });
 
-    var mapB = new kakao.maps.Map(document.getElementById('mapB'), {
+    // 지도 B 생성
+    var mapBContainer = document.getElementById('mapB');
+    var mapB = new kakao.maps.Map(mapBContainer, {
       center: new kakao.maps.LatLng(37.5665, 126.9780), // 서울 시청
       level: 12
     });
 
+    // 전환 함수
     function showMap(mapId) {
+      // 모든 지도 숨기기
       document.getElementById('mapA').classList.remove('active');
       document.getElementById('mapB').classList.remove('active');
 
-      document.getElementById('map' + mapId).classList.add('active');
+      // 선택한 지도 보이기
+      var targetId = 'map' + mapId;
+      var targetDiv = document.getElementById(targetId);
+      targetDiv.classList.add('active');
+
+      // relayout + 중심 이동으로 오류 방지
+      if (mapId === 'A') {
+        mapA.relayout();
+        mapA.setCenter(new kakao.maps.LatLng(36.4074, 128.1565));
+      } else {
+        mapB.relayout();
+        mapB.setCenter(new kakao.maps.LatLng(37.5665, 126.9780));
+      }
     }
   </script>
 
