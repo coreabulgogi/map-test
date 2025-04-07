@@ -1,8 +1,9 @@
 <!DOCTYPE html>
 <html lang="ko">
 <head>
-  <meta charset="UTF-8">
-  <title>여러 지도 전환</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>여러 Kakao 지도 전환</title>
   <script type="text/javascript" src="https://dapi.kakao.com/v2/maps/sdk.js?appkey=6956432726c3dc8f834ab6cf0dea4cd4"></script>
   <style>
     #mapA, #mapB {
@@ -17,7 +18,7 @@
 </head>
 <body>
 
-  <h1>매장 지도 보기</h1>
+  <h1>지도 전환 예제</h1>
   <button onclick="showMap('A')">지도 A 보기</button>
   <button onclick="showMap('B')">지도 B 보기</button>
 
@@ -25,38 +26,41 @@
   <div id="mapB"></div>
 
   <script>
-    // 지도 A 생성
+    // 지도 컨테이너
     var mapAContainer = document.getElementById('mapA');
+    var mapBContainer = document.getElementById('mapB');
+
+    // 지도 A 생성
     var mapA = new kakao.maps.Map(mapAContainer, {
-      center: new kakao.maps.LatLng(36.4074, 128.1565),
+      center: new kakao.maps.LatLng(36.4074, 128.1565), // 경북 상주
       level: 12
     });
 
     // 지도 B 생성
-    var mapBContainer = document.getElementById('mapB');
     var mapB = new kakao.maps.Map(mapBContainer, {
-      center: new kakao.maps.LatLng(37.5665, 126.9780), // 서울 시청
+      center: new kakao.maps.LatLng(37.5665, 126.9780), // 서울
       level: 12
     });
 
-    // 전환 함수
+    // 지도 전환 함수
     function showMap(mapId) {
-      // 모든 지도 숨기기
-      document.getElementById('mapA').classList.remove('active');
-      document.getElementById('mapB').classList.remove('active');
+      // 모든 지도 숨김
+      mapAContainer.classList.remove('active');
+      mapBContainer.classList.remove('active');
 
-      // 선택한 지도 보이기
-      var targetId = 'map' + mapId;
-      var targetDiv = document.getElementById(targetId);
-      targetDiv.classList.add('active');
-
-      // relayout + 중심 이동으로 오류 방지
       if (mapId === 'A') {
-        mapA.relayout();
-        mapA.setCenter(new kakao.maps.LatLng(36.4074, 128.1565));
+        mapAContainer.classList.add('active');
+        // 약간의 지연 후 relayout 적용
+        setTimeout(function() {
+          mapA.relayout();
+          mapA.setCenter(new kakao.maps.LatLng(36.4074, 128.1565));
+        }, 0);
       } else {
-        mapB.relayout();
-        mapB.setCenter(new kakao.maps.LatLng(37.5665, 126.9780));
+        mapBContainer.classList.add('active');
+        setTimeout(function() {
+          mapB.relayout();
+          mapB.setCenter(new kakao.maps.LatLng(37.5665, 126.9780));
+        }, 0);
       }
     }
   </script>
